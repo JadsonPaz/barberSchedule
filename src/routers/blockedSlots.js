@@ -2,7 +2,7 @@
 import express from 'express'
 import BlockedSlotsControllers from '../controllers/blockedSlots.js'
 import { body, validationResult } from 'express-validator'
-import User from '../models/User.js'
+import User from '../models/user.js'
 
 const blockedSlotsRouter = express.Router()
 const blockedSlotsControllers = new BlockedSlotsControllers()
