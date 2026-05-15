@@ -1,15 +1,23 @@
 import mongoose from 'mongoose';
 
+let cached = global._mongooseCache || (global._mongooseCache = { conn: null, promise: null })
+
 export const Mongoose = {
     async connect({ mongoConnectionString }) {
         try {
-            await mongoose.connect(mongoConnectionString);
+            if (cached.conn) return { text: 'MongoDB already connected' }
 
-            this.db = mongoose.connection;
+            if (!cached.promise) {
+                cached.promise = mongoose.connect(mongoConnectionString)
+            }
 
-            return { text: 'MongoDB connected successfully' };
+            cached.conn = await cached.promise
+            this.db = mongoose.connection
+
+            return { text: 'MongoDB connected successfully' }
         } catch (error) {
-            return { text: 'Error during mongo connection', error };
+            cached.promise = null
+            return { text: 'Error during mongo connection', error }
         }
     }
 }
