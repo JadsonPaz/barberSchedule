@@ -21,3 +21,6 @@ export const Mongoose = {
         }
     }
 }
+export async function connectDB() {
+    return Mongoose.connect({ mongoConnectionString: process.env.MONGOOSE_CS })
+}
