@@ -15,13 +15,17 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+app.get('/', (req, res) => {
+    res.send({ success: true, statusCode: 200, body: 'tudo certo por aqui' })
+})
+
+app.get('/health', (req, res) => {
+    res.send({ success: true, statusCode: 200, body: 'healthy' })
+})
+
 app.use(async (req, res, next) => {
     await connectDB()
     next()
-})
-
-app.get('/', (req, res) => {
-    res.send({ success: true, statusCode: 200, body: 'tudo certo por aqui' })
 })
 
 app.use('/auth', authRouter)
@@ -30,5 +34,11 @@ app.use('/appointments',  authenticateToken, appointmentsRouter)
 app.use('/services',      authenticateToken, servicesRouter)
 app.use('/availability',  authenticateToken, availabilityRouter)
 app.use('/blocked-slots', authenticateToken, blockedSlotsRouter)
+
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})
 
 export default app
