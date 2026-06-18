@@ -20,7 +20,7 @@ function checkValidations(req, res) {
         res.status(400).send({
             success: false,
             statusCode: 400,
-            body: { text: 'Erro de valida??o', errors: errors.array() },
+            body: { text: 'Erro de validação', errors: errors.array() },
         })
         return false
     }
@@ -216,7 +216,7 @@ authRouter.post('/refresh', refreshTokenValidations, async (req, res) => {
             success: true,
             statusCode: 200,
             body: {
-                text: 'Sess?o renovada com sucesso',
+                text: 'Sessão renovada com sucesso',
                 user,
                 token,
                 refreshToken: nextRefreshToken,
@@ -307,7 +307,7 @@ authRouter.post('/reset-password', resetPasswordValidations, async (req, res) =>
             return res.status(400).send({
                 success: false,
                 statusCode: 400,
-                body: { text: 'Token inv?lido ou expirado' },
+                body: { text: 'Token invalido ou expirado' },
             })
         }
 
