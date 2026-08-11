@@ -67,40 +67,40 @@ async function createAuthBody(user, text) {
 const signupValidations = [
     body('fullname')
         .trim()
-        .notEmpty().withMessage('Nome completo ? obrigat?rio')
+        .notEmpty().withMessage('Nome completo obrigatório')
         .isLength({ min: 3 }).withMessage('Nome deve ter ao menos 3 caracteres'),
     body('email')
         .trim()
-        .notEmpty().withMessage('E-mail ? obrigat?rio')
-        .isEmail().withMessage('E-mail inv?lido'),
+        .notEmpty().withMessage('E-mail obrigatório')
+        .isEmail().withMessage('E-mail inválido'),
     body('password')
-        .notEmpty().withMessage('Senha ? obrigat?ria')
+        .notEmpty().withMessage('Senha obrigatória')
         .isLength({ min: 6 }).withMessage('Senha deve ter ao menos 6 caracteres'),
 ]
 
 const loginValidations = [
-    body('email').trim().notEmpty().isEmail().withMessage('E-mail inv?lido'),
-    body('password').notEmpty().withMessage('Senha ? obrigat?ria'),
+    body('email').trim().notEmpty().isEmail().withMessage('E-mail inválido'),
+    body('password').notEmpty().withMessage('Senha obrigatória'),
 ]
 
 const forgotPasswordValidations = [
     body('email')
         .trim()
-        .notEmpty().withMessage('E-mail ? obrigat?rio')
-        .isEmail().withMessage('E-mail inv?lido'),
+        .notEmpty().withMessage('E-mail obrigatório')
+        .isEmail().withMessage('E-mail inválido'),
 ]
 
 const resetPasswordValidations = [
     body('token')
-        .notEmpty().withMessage('Token ? obrigat?rio'),
+        .notEmpty().withMessage('Token obrigatório'),
     body('newPassword')
-        .notEmpty().withMessage('Nova senha ? obrigat?ria')
+        .notEmpty().withMessage('Nova senha obrigatória')
         .isLength({ min: 6 }).withMessage('Nova senha deve ter ao menos 6 caracteres'),
 ]
 
 const refreshTokenValidations = [
     body('refreshToken')
-        .notEmpty().withMessage('Refresh token ? obrigat?rio'),
+        .notEmpty().withMessage('Refresh token obrigatório'),
 ]
 
 authRouter.post('/signup', signupValidations, async (req, res) => {
@@ -112,7 +112,7 @@ authRouter.post('/signup', signupValidations, async (req, res) => {
         const existingUser = await User.findOne({ $or: [{ email }, { fullname }] })
         if (existingUser) {
             const message =
-                existingUser.email === email ? 'Email j? cadastrado' : 'Nome j? cadastrado'
+                existingUser.email === email ? 'Email já cadastrado' : 'Nome já cadastrado'
             return res.status(409).send({
                 success: false,
                 statusCode: 409,
@@ -123,7 +123,7 @@ authRouter.post('/signup', signupValidations, async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 12)
         const newUser = await User.create({ fullname, email, password: hashedPassword, role: 'user' })
         const user = await User.findById(newUser._id)
-        const responseBody = await createAuthBody(user, 'Usu?rio cadastrado com sucesso')
+        const responseBody = await createAuthBody(user, 'Usuário cadastrado com sucesso')
 
         return res.status(201).send({
             success: true,
@@ -150,7 +150,7 @@ authRouter.post('/login', loginValidations, async (req, res) => {
             return res.status(401).send({
                 success: false,
                 statusCode: 401,
-                body: { text: 'Credenciais inv?lidas' },
+                body: { text: 'Credenciais inválidas' },
             })
         }
 
@@ -159,7 +159,7 @@ authRouter.post('/login', loginValidations, async (req, res) => {
             return res.status(401).send({
                 success: false,
                 statusCode: 401,
-                body: { text: 'Credenciais inv?lidas' },
+                body: { text: 'Credenciais inválidas' },
             })
         }
 
@@ -192,7 +192,7 @@ authRouter.post('/refresh', refreshTokenValidations, async (req, res) => {
             return res.status(401).send({
                 success: false,
                 statusCode: 401,
-                body: { text: 'Sua sess?o expirou, entre novamente' },
+                body: { text: 'Sua sessão expirou, entre novamente' },
             })
         }
 
@@ -202,7 +202,7 @@ authRouter.post('/refresh', refreshTokenValidations, async (req, res) => {
             return res.status(401).send({
                 success: false,
                 statusCode: 401,
-                body: { text: 'Sua sess?o expirou, entre novamente' },
+                body: { text: 'Sua sessão expirou, entre novamente' },
             })
         }
 
@@ -264,7 +264,7 @@ authRouter.post('/forgot-password', forgotPasswordValidations, async (req, res) 
                 success: true,
                 statusCode: 200,
                 body: {
-                    text: 'Se este email estiver cadastrado, voc? receber? as instru??es em breve.',
+                    text: 'Se este email estiver cadastrado, você receberá as instruções em breve.',
                 },
             })
 
@@ -334,7 +334,7 @@ authRouter.post('/reset-password', resetPasswordValidations, async (req, res) =>
         return res.status(200).send({
             success: true,
             statusCode: 200,
-            body: { text: 'Senha redefinida com sucesso. Fa?a login com a nova senha.' },
+            body: { text: 'Senha redefinida com sucesso. Faça login com a nova senha.' },
         })
     } catch (error) {
         return res.status(500).send({
