@@ -8,6 +8,8 @@ const appointmentsControllers = new Appointments();
 const appointmentStatus = ["pending", "confirmed", "cancelled", "done"];
 const appointmentUpdatableFields = [
     "userId",
+    "clientName",
+    "clientPhone",
     "barberId",
     "serviceId",
     "date",
@@ -19,8 +21,20 @@ const appointmentUpdatableFields = [
 
 const createValidations = [
     body("userId")
-        .notEmpty().withMessage("userId é obrigatório")
-        .isMongoId().withMessage("userId inválido"),
+        .optional({ nullable: true, checkFalsy: true })
+        .isMongoId().withMessage("userId invalido"),
+
+    body("clientName")
+        .optional({ nullable: true, checkFalsy: true })
+        .trim()
+        .isLength({ min: 2, max: 120 })
+        .withMessage("Nome do cliente deve ter entre 2 e 120 caracteres"),
+
+    body("clientPhone")
+        .optional({ nullable: true, checkFalsy: true })
+        .trim()
+        .isLength({ max: 30 })
+        .withMessage("Telefone do cliente deve ter no maximo 30 caracteres"),
 
     body("barberId")
         .notEmpty().withMessage("barberId é obrigatório")
@@ -64,7 +78,19 @@ const updateValidations = [
         return true;
     }),
 
-    body("userId").optional().isMongoId().withMessage("userId inválido"),
+    body("userId").optional({ nullable: true, checkFalsy: true }).isMongoId().withMessage("userId invalido"),
+
+    body("clientName")
+        .optional({ nullable: true, checkFalsy: true })
+        .trim()
+        .isLength({ min: 2, max: 120 })
+        .withMessage("Nome do cliente deve ter entre 2 e 120 caracteres"),
+
+    body("clientPhone")
+        .optional({ nullable: true, checkFalsy: true })
+        .trim()
+        .isLength({ max: 30 })
+        .withMessage("Telefone do cliente deve ter no maximo 30 caracteres"),
 
     body("barberId").optional().isMongoId().withMessage("barberId inválido"),
 

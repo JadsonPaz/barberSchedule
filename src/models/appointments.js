@@ -6,7 +6,17 @@ const appointmentSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Usuário é obrigatório"],
+      default: null,
+    },
+    clientName: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    clientPhone: {
+      type: String,
+      trim: true,
+      default: null,
     },
     barberId: {
       type: mongoose.Schema.Types.ObjectId,

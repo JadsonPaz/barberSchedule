@@ -5,6 +5,21 @@ import BlockedSlotsDataAccess from "./blockedSlots.js";
 const availabilityDA = new AvailabilityDataAccess();
 const blockedSlotsDA = new BlockedSlotsDataAccess();
 
+function normalizeNullableAppointmentFields(appointmentData, { includeMissingUser = false } = {}) {
+    if (includeMissingUser && appointmentData.userId === undefined) {
+        appointmentData.userId = null;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(appointmentData, "userId") && !appointmentData.userId) {
+        appointmentData.userId = null;
+    }
+
+    for (const field of ["clientName", "clientPhone", "notes"]) {
+        if (Object.prototype.hasOwnProperty.call(appointmentData, field) && appointmentData[field] === "") {
+            appointmentData[field] = null;
+        }
+    }
+}
 function buildAvailabilityError(barberId, date, time) {
     const error = new Error("Horário fora do período de atendimento do barbeiro");
     error.code = "AVAILABILITY_CONFLICT";
@@ -172,6 +187,8 @@ export default class Appointments {
     }
 
     async createAppointment(appointmentData) {
+        normalizeNullableAppointmentFields(appointmentData, { includeMissingUser: true });
+
         // Normaliza a data para meio-dia UTC antes de salvar
         // Isso evita que conversões de fuso mudem o dia
         if (appointmentData.date) {
@@ -191,6 +208,8 @@ export default class Appointments {
     }
 
     async updateAppointment(appointmentId, appointmentData) {
+        normalizeNullableAppointmentFields(appointmentData);
+
         if (appointmentData.date) {
             const dateOnly = typeof appointmentData.date === 'string'
                 ? appointmentData.date.split('T')[0]
