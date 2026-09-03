@@ -8,6 +8,7 @@ import {
     requireAdmin,
     requireSelfOrAdmin
 } from '../middlewares/auth.middleware.js'
+import { isValidExpoPushToken } from '../services/pushNotification.service.js'
 
 const usersRouter = express.Router()
 const usersControllers = new UsersControllers()
@@ -39,6 +40,18 @@ const roleValidation = [
     body('role')
         .notEmpty().withMessage('Role é obrigatória')
         .isIn(['user', 'admin']).withMessage('Role inválida'),
+]
+
+const pushTokenValidations = [
+    body('expoPushToken')
+        .notEmpty().withMessage('Token de notificação é obrigatório')
+        .custom((token) => {
+            if (!isValidExpoPushToken(token)) {
+                throw new Error('Token de notificação inválido')
+            }
+
+            return true
+        }),
 ]
 
 function checkValidations(req, res) {
@@ -105,6 +118,36 @@ usersRouter.patch(
 )
 
 // ─── Rotas do próprio usuário ──────────────────────────────────────────────────
+
+usersRouter.post(
+    '/me/push-token',
+    authenticateToken,          
+    pushTokenValidations,
+    async (req, res) => {
+        if (!checkValidations(req, res)) return
+
+        const { success, statusCode, body } = await usersControllers.addExpoPushToken(
+            req.user.id,
+            req.body.expoPushToken
+        )
+        res.status(statusCode).send({ success, statusCode, body })
+    }
+)
+
+usersRouter.delete(
+    '/me/push-token',
+    authenticateToken,          
+    pushTokenValidations,
+    async (req, res) => {
+        if (!checkValidations(req, res)) return
+
+        const { success, statusCode, body } = await usersControllers.removeExpoPushToken(
+            req.user.id,
+            req.body.expoPushToken
+        )
+        res.status(statusCode).send({ success, statusCode, body })
+    }
+)
 
 // PATCH /users/:id/profile — atualizar nome/email (próprio usuário ou admin)
 usersRouter.patch(

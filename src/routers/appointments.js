@@ -157,7 +157,7 @@ appointmentsRouter.put("/:id", updateValidations, async (req, res) => {
 });
 
 appointmentsRouter.delete("/:id", async (req, res) => {
-    const { success, statusCode, body } = await appointmentsControllers.deleteAppointment(req.params.id);
+    const { success, statusCode, body } = await appointmentsControllers.deleteAppointment(req.params.id, req.user);
     res.status(statusCode).send({ success, statusCode, body });
 });
 

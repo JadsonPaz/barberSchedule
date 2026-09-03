@@ -83,4 +83,24 @@ export default class UsersControllers {
             return serverError(error)
         }
     }
+
+    async addExpoPushToken(userId, expoPushToken) {
+        try {
+            const result = await this.dataAccess.addExpoPushToken(userId, expoPushToken)
+            if (!result) return notFound('Usuário não encontrado')
+            return ok({ text: 'Token de notificação registrado com sucesso' })
+        } catch (error) {
+            return serverError(error)
+        }
+    }
+
+    async removeExpoPushToken(userId, expoPushToken) {
+        try {
+            const result = await this.dataAccess.removeExpoPushToken(userId, expoPushToken)
+            if (!result) return notFound('Usuário não encontrado')
+            return ok({ text: 'Token de notificação removido com sucesso' })
+        } catch (error) {
+            return serverError(error)
+        }
+    }
 }

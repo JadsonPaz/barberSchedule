@@ -65,4 +65,20 @@ export default class UsersDataAccess {
             { new: true }
         )
     }
+
+    async addExpoPushToken(userId, expoPushToken) {
+        return User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { expoPushTokens: expoPushToken } },
+            { new: true }
+        )
+    }
+
+    async removeExpoPushToken(userId, expoPushToken) {
+        return User.findByIdAndUpdate(
+            userId,
+            { $pull: { expoPushTokens: expoPushToken } },
+            { new: true }
+        )
+    }
 }

@@ -1,5 +1,9 @@
 import Appointments from "../dataAccess/appointments.js";
 import { conflict, ok, notFound, serverError } from "../helpers/httpResponse.js";
+import {
+    notifyBarberAppointmentCancelled,
+    notifyBarberAppointmentCreated,
+} from "../services/pushNotification.service.js";
 
 export default class AppointmentsControllers {
     constructor() {
@@ -28,6 +32,9 @@ export default class AppointmentsControllers {
     async createAppointment(appointmentData) {
         try {
             const result = await this.dataAccess.createAppointment(appointmentData);
+            notifyBarberAppointmentCreated(result._id).catch((error) => {
+                console.error("Erro ao notificar novo agendamento:", error);
+            });
             return { success: true, statusCode: 201, body: result };
         } catch (error) {
             if (error.code === "APPOINTMENT_CONFLICT") {
@@ -62,10 +69,15 @@ export default class AppointmentsControllers {
         }
     }
 
-    async deleteAppointment(appointmentId) {
+    async deleteAppointment(appointmentId, requester) {
         try {
             const result = await this.dataAccess.deleteAppointment(appointmentId);
             if (!result) return notFound("Agendamento não encontrado");
+            if (requester?.role !== "admin") {
+                notifyBarberAppointmentCancelled(result._id).catch((error) => {
+                    console.error("Erro ao notificar cancelamento de agendamento:", error);
+                });
+            }
             return ok(result);
         } catch (error) {
             return serverError(error);
